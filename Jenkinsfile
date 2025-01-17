@@ -2,6 +2,7 @@ pipeline {
     agent any  // Run on any available agent
     
     environment {
+        // Define environment variables if necessary
         DOCKER_IMAGE_NAME = 'my-dotdocker-app'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'vsmetgud/dotnet'  // Specify your Docker registry if needed
@@ -12,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Checkout code from the repository
-                    git branch: 'main', url: 'https://github.com/vijaysmetgud/dotnet-docker.git'
+                    git 'https://github.com/vijaysmetgud/dotnet-docker.git'
                 }
             }
         }
@@ -44,7 +45,6 @@ pipeline {
             }
         }
 
-
         stage('Build Docker Image') {
             steps {
                 script {
@@ -73,10 +73,9 @@ pipeline {
             }
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        // Login to Docker registry
+                    // Push Docker image to registry (if configured)
+                    if (DOCKER_REGISTRY != '') {
                         sh '''
-                            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
                             docker tag $DOCKER_IMAGE_NAME:$DOCKER_TAG $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
                             docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
                         '''
@@ -89,9 +88,9 @@ pipeline {
             steps {
                 script {
                     // Remove the Docker container after running
-                    sh 'docker rm -f $DOCKER_IMAGE_NAME || true'
+                    sh 'docker rm -f $DOCKER_IMAGE_NAME'
                     // Optionally, remove the image after push (if you don't need it locally)
-                    sh 'docker rmi $DOCKER_IMAGE_NAME:$DOCKER_TAG || true'
+                    sh 'docker rmi $DOCKER_IMAGE_NAME:$DOCKER_TAG'
                 }
             }
         }
@@ -101,8 +100,6 @@ pipeline {
         always {
             // Clean up the Docker container if it exists
             sh 'docker ps -aq --filter name=$DOCKER_IMAGE_NAME | xargs -I {} docker rm -f {} || true'
-            // Clean up Docker images if needed
-            sh 'docker images -q $DOCKER_IMAGE_NAME:$DOCKER_TAG | xargs -I {} docker rmi {} || true'
         }
 
         success {
@@ -113,4 +110,4 @@ pipeline {
             echo "Build or Dockerize project failed"
         }
     } 
-}
+}  
