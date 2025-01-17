@@ -109,4 +109,5 @@ pipeline {
         failure {
             echo "Build or Dockerize project failed"
         }
-    }   
+    } 
+}  
