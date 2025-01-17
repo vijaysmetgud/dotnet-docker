@@ -13,7 +13,8 @@ pipeline {
             steps {
                 script {
                     // Checkout code from the repository
-                    git 'https://github.com/vijaysmetgud/dotnet-docker.git'
+                    git clone https://github.com/vijaysmetgud/dotnet-docker.git
+
                 }
             }
         }
