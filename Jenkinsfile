@@ -19,12 +19,16 @@ pipeline {
         }
         
         stage('Restore Dependencies') {
-            steps {
-                script {
-                    sh 'dotnet restore'
-                    }
-                }
+    steps {
+        script {
+            // Navigate to the folder containing the .csproj or .sln file
+            dir('/var/lib/jenkins/workspace/dotdocker/samples/aspnetapp/') { // replace 'src' with the correct directory
+                sh 'dotnet restore'
             }
+        }
+    }
+}
+
         
 
         stage('Build') {
