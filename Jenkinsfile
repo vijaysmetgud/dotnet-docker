@@ -20,35 +20,26 @@ pipeline {
         stage('Restore Dependencies') {
             steps {
                 script {
-                    // Navigate to the directory containing the .csproj file
-                    dir('src/MyApp') {
-                        // Restore dependencies using dotnet CLI
-                        sh 'dotnet restore'
-                    }
+                    // Restore dependencies using dotnet CLI
+                    sh 'dotnet restore'
                 }
             }
         }
-        
+
         stage('Build') {
             steps {
                 script {
-                    // Navigate to the directory containing the .csproj file
-                    dir('src/MyApp') {
-                        // Build the .NET 8.0 application
-                        sh 'dotnet build --configuration Release'
-                    }
+                    // Build the .NET 8.0 application
+                    sh 'dotnet build --configuration Release'
                 }
             }
         }
-        
+
         stage('Publish') {
             steps {
                 script {
-                    // Navigate to the directory containing the .csproj file
-                    dir('src/MyApp') {
-                        // Publish the application to a folder for Dockerization
-                        sh 'dotnet publish --configuration Release --output ./publish'
-                    }
+                    // Publish the application to a folder for Dockerization
+                    sh 'dotnet publish --configuration Release --output ./publish'
                 }
             }
         }
