@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     // Checkout code from the repository
-                    git 'https://github.com/vijaysmetgud/dotnet-docker.git'
+                    git branch: 'main', url: 'https://github.com/vijaysmetgud/dotnet-docker.git'
                 }
             }
         }
