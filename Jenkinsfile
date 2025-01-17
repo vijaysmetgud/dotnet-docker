@@ -21,8 +21,8 @@ pipeline {
         stage('Restore Dependencies') {
             steps {
                 script {
-                    dir('~/dotnet-docker/samples/') {
-                        sh 'dotnet restore'
+                    sh 'cd ~/dotnet-docker/src/'
+                    sh 'dotnet restore'
                     }
                 }
             }
