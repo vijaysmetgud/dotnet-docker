@@ -2,7 +2,6 @@ pipeline {
     agent any  // Run on any available agent
     
     environment {
-        // Define environment variables if necessary
         DOCKER_IMAGE_NAME = 'my-dotdocker-app'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'vsmetgud/dotnet'  // Specify your Docker registry if needed
@@ -13,8 +12,7 @@ pipeline {
             steps {
                 script {
                     // Checkout code from the repository
-                    git clone https://github.com/vijaysmetgud/dotnet-docker.git
-
+                    git 'https://github.com/vijaysmetgud/dotnet-docker.git'
                 }
             }
         }
@@ -74,14 +72,13 @@ pipeline {
             }
             steps {
                 script {
-                    // Push Docker image to registry (if configured)
-                    if (DOCKER_REGISTRY != '') {
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        // Login to Docker registry
                         sh '''
+                            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
                             docker tag $DOCKER_IMAGE_NAME:$DOCKER_TAG $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
                             docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
                         '''
-                    } else {
-                        echo "Docker registry is not configured. Skipping push."
                     }
                 }
             }
