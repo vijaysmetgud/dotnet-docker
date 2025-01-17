@@ -107,4 +107,4 @@ pipeline {
         }
 
         failure {
-            echo "Build or Dockerize pro
+            echo "Build or Dockerize project failed"
