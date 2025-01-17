@@ -21,11 +21,13 @@ pipeline {
         stage('Restore Dependencies') {
             steps {
                 script {
-                    // Restore dependencies using dotnet CLI
-                    sh 'dotnet restore'
+                    dir('~/dotnet-docker/samples') {
+                        sh 'dotnet restore'
+                    }
                 }
             }
-        }
+            }
+
 
         stage('Build') {
             steps {
