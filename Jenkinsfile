@@ -79,6 +79,8 @@ pipeline {
                             docker tag $DOCKER_IMAGE_NAME:$DOCKER_TAG $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
                             docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
                         '''
+                    } else {
+                        echo "Docker registry is not configured. Skipping push."
                     }
                 }
             }
@@ -88,9 +90,9 @@ pipeline {
             steps {
                 script {
                     // Remove the Docker container after running
-                    sh 'docker rm -f $DOCKER_IMAGE_NAME'
+                    sh 'docker rm -f $DOCKER_IMAGE_NAME || true'
                     // Optionally, remove the image after push (if you don't need it locally)
-                    sh 'docker rmi $DOCKER_IMAGE_NAME:$DOCKER_TAG'
+                    sh 'docker rmi $DOCKER_IMAGE_NAME:$DOCKER_TAG || true'
                 }
             }
         }
@@ -100,6 +102,8 @@ pipeline {
         always {
             // Clean up the Docker container if it exists
             sh 'docker ps -aq --filter name=$DOCKER_IMAGE_NAME | xargs -I {} docker rm -f {} || true'
+            // Clean up Docker images if needed
+            sh 'docker images -q $DOCKER_IMAGE_NAME:$DOCKER_TAG | xargs -I {} docker rmi {} || true'
         }
 
         success {
@@ -110,4 +114,4 @@ pipeline {
             echo "Build or Dockerize project failed"
         }
     } 
-}  
+}
